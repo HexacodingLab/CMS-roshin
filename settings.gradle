@@ -1,0 +1,9 @@
+// settings.gradle
+pluginManagement {
+    repositories {
+        gradlePluginPortal()  // Ensures Gradle will look here for plugins
+        mavenCentral()        // Optional: additional fallback repositories
+    }
+}
+
+rootProject.name = 'roshin'

@@ -1,0 +1,7 @@
+query Query {
+    getArticles(name: "Article"){
+        id
+        name
+        content
+    }
+}

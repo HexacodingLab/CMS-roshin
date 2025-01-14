@@ -1,4 +1,4 @@
-package roshin.web;
+package roshin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

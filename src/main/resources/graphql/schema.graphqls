@@ -1,0 +1,9 @@
+type Query {
+    getArticles(name: String): [Article]
+}
+
+type Article {
+    id: ID
+    name: String
+    content: String
+}

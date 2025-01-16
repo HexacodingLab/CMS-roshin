@@ -9,7 +9,6 @@ import roshin.service.ArticleService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class ArticleResolver {
@@ -24,10 +23,10 @@ public class ArticleResolver {
     @QueryMapping
     public List<Article> getArticles(@Argument String name) {
         List<Article> articles = new ArrayList<>();
-        if (name.isEmpty()) {
+        if (name == null) {
             articles.addAll(service.getAll());
-        } else {
-            articles.add(service.getByName(name).orElse(null));
+        } else if (service.getByName(name).isPresent()) {
+            articles.add(service.getByName(name).get());
         }
         return articles;
     }

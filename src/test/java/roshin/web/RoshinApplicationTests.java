@@ -1,5 +1,6 @@
 package roshin.web;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,6 +38,20 @@ class RoshinApplicationTests {
     void smokeTest() {
         String response = restTemplate.getForObject(buildUrl("/ping"), String.class);
         assertEquals("pong", response, "Expected response was 'pong'");
+    }
+
+    @Test
+    void loadHomeTest() {
+        String response = restTemplate.getForObject(buildUrl("/"), String.class);
+        assertThat(response).contains("Hexacoding");
+    }
+
+    @Test
+    void loadLoginPageTest() {
+        String response = restTemplate.getForObject(buildUrl("/login"), String.class);
+        assertThat(response).contains("Login");
+        assertThat(response).contains("Username");
+        assertThat(response).contains("Password");
     }
 
     @Test
@@ -106,5 +122,10 @@ class RoshinApplicationTests {
 
     String buildUrl(String path) {
         return "http://localhost:" + port + path;
+    }
+
+    @AfterEach
+    void tearDown() {
+        articleService.deleteByName("Article");
     }
 }

@@ -4,7 +4,7 @@ package roshin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import roshin.model.Article;
-import roshin.model.TextsRepository;
+import roshin.model.ArticleRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Service
 public class ArticleService {
-    private final TextsRepository repository;
+    private final ArticleRepository repository;
 
     @Autowired
-    public ArticleService(TextsRepository textsRepository) {
-        this.repository = textsRepository;
+    public ArticleService(ArticleRepository articleRepository) {
+        this.repository = articleRepository;
     }
 
     public void save(Article article) {

@@ -1,14 +1,18 @@
 package roshin;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,15 +27,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/graphql",
-                                "/graphiql",
+                                "/api/graphql",
+                                "/api/graphiql",
+                                "/api/login",
+                                "/api/ping",
                                 "/login",
                                 "/",
-                                "/ping",
                                 "/js/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/articles", true)
+                        .permitAll()
+                )
+                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
@@ -42,9 +53,20 @@ public class SecurityConfig {
         return builder.build();
     }
 
+
+    @Value("${ROSHIN_USER:admin}")
+    private String username;
+
+    @Value("${ROSHIN_PASSWORD:admin}")
+    private String password;
+
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("roshin").password("{noop}mySecretPassword123").build();
+        UserDetails user = User
+                .withUsername(username)
+                .password("{noop}" + password)
+                .roles("USER")
+                .build();
         return new InMemoryUserDetailsManager(user);
     }
 }

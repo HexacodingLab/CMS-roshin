@@ -12,16 +12,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class AuthenticationController {
+public class LoginController {
 
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager) {
+    public LoginController(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public ResponseEntity<Map<String, String>> authenticate(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");

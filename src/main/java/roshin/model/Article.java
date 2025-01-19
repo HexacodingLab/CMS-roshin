@@ -9,25 +9,21 @@ import java.util.UUID;
 @Entity
 public class Article implements Serializable {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @UuidGenerator
     @Column(updatable = false, nullable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();;
 
     @Column(unique = true)
     private String name;
 
     private String content;
 
-    public Article() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-    }
-
     // I hate this. This is stupid and it should be berried deep.
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public void setName(String name) {

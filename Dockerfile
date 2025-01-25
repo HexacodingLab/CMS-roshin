@@ -1,3 +1,4 @@
+
 FROM amazoncorretto:23-alpine-full as builder
 
 WORKDIR /app
@@ -7,6 +8,9 @@ COPY . .
 RUN sh ./gradlew bootJar
 
 FROM amazoncorretto:23-alpine
+
+# Label
+LABEL org.opencontainers.image.source = "https://github.com/HexacodingLab/CMS-roshin"
 
 # Create data folder
 RUN mkdir "/data"

@@ -1,0 +1,16 @@
+services:
+  web:
+    image: ghcr.io/hexacodinglab/cms-roshin:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ROSHIN_USER: admin
+      ROSHIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - database:/data
+
+volumes:
+  database:

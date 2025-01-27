@@ -2,8 +2,18 @@ type Query {
     getArticles(name: String): [Article]
 }
 
+type Mutation {
+    createArticle(article: ArticleInput!): Article
+    deleteArticle(id: String!): Boolean
+}
+
 type Article {
     id: ID
     name: String
+    content: String
+}
+
+input ArticleInput {
+    name: String!
     content: String
 }

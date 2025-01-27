@@ -8,14 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.http.*;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import roshin.model.Article;
 import roshin.service.ArticleService;
 
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,11 +34,24 @@ class ApiTests {
     @Autowired
     private GraphQlTester graphQlTester;
 
+    private GraphQlTester authGraphQlTester;
+
     private Util util;
 
     @BeforeEach
     void setUp() {
         util = Util.setUp(port, articleService);
+
+        WebTestClient.Builder webTestClientBuilder = WebTestClient
+                .bindToServer()
+                .baseUrl("http://localhost:" + port + "/api/graphql");
+
+        authGraphQlTester = HttpGraphQlTester
+                .builder(webTestClientBuilder)
+                .headers(
+                    (headers) -> headers.setBasicAuth("admin", "admin")
+                )
+                .build();
     }
 
     @Test
@@ -62,7 +76,7 @@ class ApiTests {
     }
 
     @Test
-    void shouldGetArticlesFromGraphQL() {
+    void shouldGetArticles() {
         Article article = articleService.getByName("Article").orElseThrow();
 
         this.graphQlTester
@@ -79,9 +93,57 @@ class ApiTests {
                 """, article.getId()));
     }
 
+    @Test
+    void shouldCreateNewArticle() {
+        this.authGraphQlTester
+                .documentName("createArticle")
+                .execute()
+                .path("createArticle")
+                .matchesJson("""
+                    {
+                        "name": "Article2",
+                        "content": "This is my example test2"
+                    }
+                """);
+    }
+
+    @Test
+    void shouldDeleteArticle() {
+        String id = articleService
+                .getByName("Article")
+                .orElseThrow(() -> new RuntimeException("Article not found"))
+                .getId()
+                .toString();
+        this.authGraphQlTester
+                .documentName("deleteArticle")
+                .variable("id", id)
+                .execute()
+                .path("deleteArticle")
+                .entity(Boolean.class)
+                .isEqualTo(true);
+    }
+
+    @Test
+    void shouldNotDeleteNotAuth() {
+        String id = articleService
+                .getByName("Article")
+                .orElseThrow(() -> new RuntimeException("Article not found"))
+                .getId()
+                .toString();
+        this.graphQlTester
+                .documentName("deleteArticle")
+                .variable("id", id)
+                .execute()
+                .errors()
+                .expect(e ->
+                    Objects.requireNonNull(e.getMessage()).contains("Unauthorized")
+                );
+    }
+
     @AfterEach
     void tearDown() {
         util.tearDown(articleService);
+        articleService.deleteByName("Article2");
     }
 }
 

@@ -1,0 +1,6 @@
+mutation {
+    createArticle(article: { name: "Article2", content: "This is my example test2"}) {
+        name
+        content
+    }
+}

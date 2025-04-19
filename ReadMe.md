@@ -3,6 +3,9 @@
 This Spring Boot application provides an API for managing articles using GraphQL. 
 It supports querying and mutating article data, as well as an optional UI for visual management of articles.
 
+<img src="home.png" width="600" alt="home"/>
+<img src="article.png" width="600" alt="article"/>
+
 ## Features
 
 - **GraphQL API** for managing articles.
